@@ -59,3 +59,10 @@ resource "postgresql_database" "postgrest" {
   name       = "postgrest"
   depends_on = [docker_container.postgres]
 }
+
+# Create namespace for postgrest inside k3d cluster
+resource "kubernetes_namespace" "postgrest" {
+  metadata {
+    name = "postgrest"
+  }
+}

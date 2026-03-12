@@ -22,3 +22,25 @@ variable "postgres_port" {
   type        = number
   default     = 5432
 }
+
+variable "db_name" {
+  type = string
+}
+
+variable "db_user" {
+  type = string
+}
+
+variable "db_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "db_superuser" {
+  type = string
+}
+
+variable "db_superuser_password" {
+  type      = string
+  sensitive = true
+}
