@@ -198,7 +198,7 @@ You should see JSON data inserted by the Kubernetes Job.
 
 Example API response:
 
-![/people endpoint](https://share.zight.com/04ujgZZE)
+![/people endpoint](https://share.zight.com/04ujgZZE/download)
 
 ```json
 [
@@ -246,7 +246,7 @@ Login with:
 
 You should see the postgrest application synced and healthy.
 
-![Argo CD UI](https://share.zight.com/X6u1D6g0)
+![Argo CD UI](https://share.zight.com/X6u1D6g0/download)
 
 ---
 
