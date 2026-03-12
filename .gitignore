@@ -10,3 +10,9 @@ tofu/*.tf~
 # tfvars (contains secrets)
 *.tfvars
 !*.tfvars.example
+
+# Terraform / OpenTofu state
+*.tfstate
+*.tfstate.*
+terraform.tfstate
+terraform.tfstate.*

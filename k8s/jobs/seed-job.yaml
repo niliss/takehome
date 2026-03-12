@@ -1,0 +1,78 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgrest-seed
+  namespace: postgrest
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: seed
+          image: postgres:16
+          env:
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgrest-db-secret
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgrest-db-secret
+                  key: DB_SUPERUSER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgrest-db-secret
+                  key: DB_SUPERPASS
+            - name: APP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgrest-db-secret
+                  key: DB_USER
+            - name: APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgrest-db-secret
+                  key: DB_PASSWORD
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Waiting for Postgres..."
+              until PGPASSWORD="$DB_PASSWORD" psql -h postgres -U "$DB_USER" -d "$DB_NAME" -c '\q'; do
+                sleep 2
+              done
+
+              echo "Creating schema and tables..."
+              PGPASSWORD="$DB_PASSWORD" psql -h postgres -U "$DB_USER" -d "$DB_NAME" <<EOF
+              DO \$\$
+              BEGIN
+                IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '$APP_USER') THEN
+                  EXECUTE format('CREATE ROLE %I LOGIN PASSWORD %L', '$APP_USER', '$APP_PASSWORD');
+                END IF;
+              END
+              \$\$;
+
+              CREATE SCHEMA IF NOT EXISTS api;
+
+              CREATE TABLE IF NOT EXISTS api.people (
+                id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL
+              );
+
+              INSERT INTO api.people (name, email)
+              VALUES
+                ('Niels', 'niels@example.com'),
+                ('Alice', 'alice@example.com'),
+                ('Bob', 'bob@example.com');
+
+              GRANT USAGE ON SCHEMA api TO "$APP_USER";
+              GRANT SELECT ON ALL TABLES IN SCHEMA api TO "$APP_USER";
+              ALTER DEFAULT PRIVILEGES IN SCHEMA api GRANT SELECT ON TABLES TO "$APP_USER";
+              EOF
+
+              echo "Database seeded successfully."
