@@ -1,0 +1,5 @@
+db_name               = "appdbs"
+db_user               = "postgrest_user"
+db_password           = "change_me_app_password"
+db_superuser          = "admin_user"
+db_superuser_password = "change_me_super_password"

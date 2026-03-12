@@ -4,3 +4,9 @@ tofu/.terraform.lock.hcl
 tofu/terraform.tfstate
 tofu/terraform.tfstate.backup
 tofu/*.tf~
+
+
+
+# tfvars (contains secrets)
+*.tfvars
+!*.tfvars.example
